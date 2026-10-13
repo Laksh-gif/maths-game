@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🕵️ Math Detective · CBSE Class 11</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #10212e, #030a10);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(8, 20, 28, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid #1d3b4e;
+            border-radius: 2rem;
+            padding: 1.8rem 2rem 2rem;
+            box-shadow: 0 25px 40px -10px #000000dd, inset 0 1px 3px #2b5d7740;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -20%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle at 30% 40%, #1a4a6230, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* ---------- HEADER ---------- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .brand h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #b1e6ff, #7fc9ff, #a7f0d0);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px #0077ff60;
+        }
+
+        .case-badge {
+            background: #0e2c3b;
+            padding: 0.4rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #9ac7e7;
+            border: 1px solid #2f617d;
+            box-shadow: inset 0 1px 4px #00000080;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 0.8rem;
+            background: #0b1c26;
+            padding: 0.5rem 1.5rem;
+            border-radius: 3rem;
+            border: 1px solid #1f475e;
+            box-shadow: inset 0 2px 6px #00000080;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #c3defa;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        .stat-value {
+            font-weight: 800;
+            color: #e7f3ff;
+            background: #1a3b4f;
+            padding: 0.2rem 0.9rem;
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            min-width: 2.5rem;
+            text-align: center;
+        }
+
+        /* ---------- STORY & CLUE ---------- */
+        .story-panel {
+            background: #0a1d29;
+            border-radius: 1.5rem;
+            padding: 1.3rem 1.8rem;
+            margin-bottom: 1.8rem;
+            border-left: 6px solid #2f9bc0;
+            box-shadow: inset 0 0 20px #00000060, 0 5px 15px #00000040;
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .detective-icon {
+            font-size: 2.5rem;
+            filter: drop-shadow(0 0 10px #00a6ff);
+        }
+
+        .story-text {
+            font-size: 1.15rem;
+            color: #c2def5;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .story-text strong {
+            color: #a5e0ff;
+            font-weight: 700;
+        }
+
+        /* ---------- VAULT / PUZZLE AREA ---------- */
+        .vault-area {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 1.8rem;
+            margin-bottom: 2rem;
+            align-items: start;
+            position: relative;
+            z-index: 2;
+        }
+
+        @media (max-width: 700px) {
+            .vault-area {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .evidence-card {
+            background: linear-gradient(145deg, #102a38, #0b1d28);
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            border: 1px solid #2c607a;
+            box-shadow: 0 15px 25px -8px #00000090, inset 0 1px 2px #ffffff0d;
+            position: relative;
+        }
+
+        .evidence-tag {
+            display: inline-block;
+            padding: 0.25rem 1.2rem;
+            border-radius: 3rem;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+        }
+
+        .easy-tag { background: #1b4d3b; color: #afffcb; border: 1px solid #3fa86b; }
+        .moderate-tag { background: #5a4a1a; color: #ffe28c; border: 1px solid #c9a545; }
+        .difficult-tag { background: #5c1e2b; color: #ffb0c3; border: 1px solid #c4455e; }
+
+        .evidence-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 12px #00a6ff80);
+        }
+
+        .evidence-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e3f2ff;
+            margin-bottom: 0.7rem;
+            line-height: 1.3;
+        }
+
+        .evidence-desc {
+            color: #9bbcd6;
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 1.2rem;
+            border-bottom: 1px dashed #2c5570;
+            padding-bottom: 0.8rem;
+        }
+
+        .clue-text {
+            background: #0c1c26;
+            padding: 1rem 1.2rem;
+            border-radius: 1.2rem;
+            color: #cbe4ff;
+            font-family: 'Courier New', monospace;
+            font-size: 1.05rem;
+            border: 1px solid #2d5c77;
+            box-shadow: inset 0 0 10px #00000080;
+            word-break: break-word;
+            line-height: 1.7;
+        }
+
+        .clue-text .math {
+            color: #a5e0ff;
+            font-weight: 700;
+        }
+
+        /* Proper limit formatting */
+        .limit-format {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 0.2rem;
+        }
+
+        .limit-format .lim-text {
+            font-size: 0.9rem;
+            line-height: 1;
+        }
+
+        .limit-format .lim-sub {
+            font-size: 0.7rem;
+            line-height: 1;
+            color: #8bb8d9;
+        }
+
+        .locks-panel {
+            background: #0a1924;
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            border: 1px solid #2c607a;
+            box-shadow: 0 15px 25px -8px #00000090, inset 0 1px 2px #ffffff0d;
+        }
+
+        .locks-title {
+            color: #b3d6f0;
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .lock-btn {
+            background: #102433;
+            border: 1.5px solid #2e5a77;
+            border-radius: 1.4rem;
+            padding: 1.1rem 1.3rem;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: #c4def5;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #05111b;
+            letter-spacing: 0.2px;
+            position: relative;
+        }
+
+        .lock-btn:hover:not(:disabled) {
+            background: #173e58;
+            border-color: #4090c0;
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0 #05111b, 0 0 20px #00a6ff40;
+        }
+
+        .lock-btn .lock-icon {
+            font-size: 1.3rem;
+            width: 32px;
+            text-align: center;
+            opacity: 0.7;
+        }
+
+        .lock-btn.correct {
+            background: #0e4a2e;
+            border-color: #46d68a;
+            color: #d4ffe0;
+            box-shadow: 0 5px 0 #052b19, 0 0 22px #2ecc71;
+        }
+
+        .lock-btn.wrong {
+            background: #4d1a26;
+            border-color: #e05a76;
+            color: #ffd9e2;
+            box-shadow: 0 5px 0 #2b0e15, 0 0 18px #e74c3c80;
+        }
+
+        .lock-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.8;
+            transform: translateY(2px);
+            box-shadow: 0 3px 0 #05111b;
+        }
+
+        /* ---------- FEEDBACK ---------- */
+        .feedback-area {
+            margin-top: 1.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .feedback-message {
+            font-size: 1.05rem;
+            font-weight: 500;
+            padding: 1rem 1.5rem;
+            border-radius: 1.2rem;
+            background: #0e1f30;
+            border-left: 6px solid #2e8bc0;
+            color: #c2dfff;
+            box-shadow: inset 0 1px 3px #00000050;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .feedback-message.success {
+            border-left-color: #2ecc71;
+            background: #0e2a1d;
+            color: #b8ffd6;
+        }
+
+        .feedback-message.error {
+            border-left-color: #e74c3c;
+            background: #2a1219;
+            color: #ffc0cb;
+        }
+
+        /* ---------- BUTTONS ---------- */
+        .action-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.8rem;
+            position: relative;
+            z-index: 2;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #1d3e57;
+            border: none;
+            border-radius: 3rem;
+            padding: 0.8rem 2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #ddf0ff;
+            letter-spacing: 0.3px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 6px 0 #0b1a27, 0 5px 15px #00000050;
+            border: 1px solid #2f6383;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: #265e80;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 #0b1a27, 0 10px 20px #00000060;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0b1a27;
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #0b1a27;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(145deg, #1163a0, #0a4a7a);
+            border-color: #2a83c4;
+            box-shadow: 0 6px 0 #05263d, 0 5px 20px #0066ff40;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(145deg, #1878bd, #0e5f98);
+        }
+
+        .restart-btn {
+            background: #2e2e44;
+            border-color: #53537a;
+            box-shadow: 0 6px 0 #181828, 0 5px 15px #00000040;
+        }
+
+        .restart-btn:hover {
+            background: #3e3e5a;
+        }
+
+        .footer-note {
+            margin-top: 1.5rem;
+            text-align: center;
+            color: #527a96;
+            font-size: 0.8rem;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .score-pop {
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .shake {
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* ---------- WINNING ANIMATION ---------- */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            opacity: 0;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                opacity: 1;
+                transform: translateY(-100px) rotate(0deg) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(100vh) rotate(720deg) scale(0.5);
+            }
+        }
+
+        .win-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #0a1f2ecc, #030a10ee);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            backdrop-filter: blur(6px);
+        }
+
+        .win-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .win-trophy {
+            font-size: 8rem;
+            animation: trophyBounce 1.2s ease infinite;
+            filter: drop-shadow(0 0 40px #ffd700);
+            margin-bottom: 1rem;
+        }
+
+        @keyframes trophyBounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-30px) scale(1.1); }
+        }
+
+        .win-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #ffed8a, #ffb800);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 30px #ffd70080;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .win-subtitle {
+            font-size: 1.4rem;
+            color: #cbe4ff;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .win-score {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #a5e0ff;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .win-close-btn {
+            background: linear-gradient(145deg, #1163a0, #0a4a7a);
+            border: 2px solid #2a83c4;
+            border-radius: 3rem;
+            padding: 1rem 3rem;
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #ffffff;
+            cursor: pointer;
+            box-shadow: 0 8px 0 #05263d, 0 10px 30px #0066ff60;
+            transition: all 0.2s ease;
+            letter-spacing: 1px;
+        }
+
+        .win-close-btn:hover {
+            background: linear-gradient(145deg, #1878bd, #0e5f98);
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #05263d, 0 15px 40px #0066ff80;
+        }
+
+        .win-close-btn:active {
+            transform: translateY(5px);
+            box-shadow: 0 3px 0 #05263d;
+        }
+
+        .star-burst {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0;
+            animation: starFly 1.5s ease-out forwards;
+        }
+
+        @keyframes starFly {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(1.5);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Confetti & Win overlay containers -->
+    <div class="confetti-container" id="confettiContainer"></div>
+    <div class="win-overlay" id="winOverlay">
+        <div class="win-trophy">🏆</div>
+        <div class="win-title">CASE SOLVED!</div>
+        <div class="win-subtitle" id="winSubtitle">You cracked every clue!</div>
+        <div class="win-score" id="winScore">Score: 0/12</div>
+        <button class="win-close-btn" id="winCloseBtn">🎉 Play Again</button>
+    </div>
+
+    <div class="game-container">
+        <!-- header -->
+        <div class="header">
+            <div class="brand">
+                <h1>🕵️ Math Detective</h1>
+                <div class="case-badge">📁 Case #CBSE-11</div>
+            </div>
+            <div class="stats">
+                <div class="stat-item">
+                    <span>🔑</span>
+                    <span class="stat-value" id="scoreDisplay">0</span>
+                </div>
+                <div class="stat-item">
+                    <span>📌</span>
+                    <span class="stat-value" id="clueCounter">1/12</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- story panel -->
+        <div class="story-panel">
+            <div class="detective-icon">🔎</div>
+            <div class="story-text">
+                <strong>The Case of the Missing Formula:</strong> A thief has stolen the answer key! 
+                Crack each math clue to unlock the vault and recover the stolen answers.
+            </div>
+        </div>
+
+        <!-- main puzzle area -->
+        <div class="vault-area">
+            <div class="evidence-card">
+                <div id="difficultyTag" class="evidence-tag easy-tag">EASY</div>
+                <div class="evidence-icon" id="evidenceIcon">📜</div>
+                <div class="evidence-title" id="evidenceTitle">Clue #1</div>
+                <div class="evidence-desc" id="evidenceDesc">Crack the math to unlock the vault.</div>
+                <div class="clue-text" id="clueText">Loading clue...</div>
+            </div>
+
+            <div class="locks-panel">
+                <div class="locks-title">
+                    <span>🔐</span> Select the correct key to unlock
+                </div>
+                <div class="options-grid" id="optionsContainer"></div>
+            </div>
+        </div>
+
+        <!-- feedback -->
+        <div class="feedback-area">
+            <div class="feedback-message" id="feedbackMsg">
+                🔍 Examine the clue and choose the right key.
+            </div>
+        </div>
+
+        <!-- actions -->
+        <div class="action-row">
+            <button class="btn restart-btn" id="restartBtn">🔄 Restart Case</button>
+            <button class="btn btn-primary" id="nextBtn" disabled>Next Clue ➡️</button>
+        </div>
+
+        <div class="footer-note">Math Detective · Crack the clues · Recover the answers</div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- MYSTERY CLUES : CBSE CLASS 11 (all difficulties) ----------
+            const clues = [
+                // EASY (3)
+                {
+                    difficulty: "easy",
+                    icon: "📜",
+                    title: "The Set Conspiracy",
+                    desc: "A cryptic note mentions two sets: A = {1, 2, 3} and B = {3, 4}.",
+                    clue: "What is the intersection A ∩ B?",
+                    options: ["{1, 2}", "{3}", "{1, 2, 3, 4}", "∅"],
+                    correct: 1,
+                    explanation: "The intersection contains only the common element 3."
+                },
+                {
+                    difficulty: "easy",
+                    icon: "📐",
+                    title: "The Trigonometric Alibi",
+                    desc: "A witness recalls an angle of π/6 and π/3.",
+                    clue: "What is sin(π/6) + cos(π/3)?",
+                    options: ["1", "1/2", "√3/2", "0"],
+                    correct: 0,
+                    explanation: "sin(π/6)=1/2, cos(π/3)=1/2 → sum = 1."
+                },
+                {
+                    difficulty: "easy",
+                    icon: "🧮",
+                    title: "The Complex Suspect",
+                    desc: "Among the numbers left at the scene, one is complex.",
+                    clue: "Which of these is a complex number?",
+                    options: ["√2", "3 + i√5", "π", "0.333..."],
+                    correct: 1,
+                    explanation: "3 + i√5 has real and imaginary parts → complex."
+                },
+                // MODERATE (5)
+                {
+                    difficulty: "moderate",
+                    icon: "🔢",
+                    title: "The Binomial Password",
+                    desc: "A safe requires the number of terms in (a + b)^10.",
+                    clue: "How many terms are in the expansion of (a + b)^10?",
+                    options: ["10", "11", "12", "9"],
+                    correct: 1,
+                    explanation: "(a+b)^n has n+1 terms ⇒ 10+1 = 11 terms."
+                },
+                {
+                    difficulty: "moderate",
+                    icon: "📈",
+                    title: "The Slope Mystery",
+                    desc: "A line with slope -3 passes through point (2, 5).",
+                    clue: "What is the equation of this line?",
+                    options: ["y = -3x + 11", "y = 3x - 1", "y = -3x + 1", "y = 2x + 5"],
+                    correct: 0,
+                    explanation: "y - 5 = -3(x - 2) ⇒ y = -3x + 11."
+                },
+                {
+                    difficulty: "moderate",
+                    icon: "📉",
+                    title: "The Derivative Trail",
+                    desc: "A function is given: f(x) = x³ - 3x² + 4x - 7.",
+                    clue: "What is its derivative f'(x)?",
+                    options: ["3x² - 6x + 4", "3x² - 3x + 4", "x² - 6x + 4", "3x² - 6x - 4"],
+                    correct: 0,
+                    explanation: "d/dx (x³) = 3x², -3x² → -6x, 4x → 4."
+                },
+                {
+                    difficulty: "moderate",
+                    icon: "🧬",
+                    title: "The Geometric Sequence",
+                    desc: "A sequence 3, 6, 12, ... is found near the vault.",
+                    clue: "What is the 5th term of this GP?",
+                    options: ["24", "48", "96", "192"],
+                    correct: 1,
+                    explanation: "aₙ = arⁿ⁻¹ → a₅ = 3·2⁴ = 48."
+                },
+                {
+                    difficulty: "moderate",
+                    icon: "🎲",
+                    title: "The Dice Probability",
+                    desc: "Two dice were rolled. A sum of 9 was recorded.",
+                    clue: "What is the probability of getting a sum of 9?",
+                    options: ["1/6", "1/9", "1/12", "5/36"],
+                    correct: 1,
+                    explanation: "Favourable outcomes: (3,6),(4,5),(5,4),(6,3) → 4/36 = 1/9."
+                },
+                // DIFFICULT (4) - All Class 11 syllabus appropriate
+                {
+                    difficulty: "difficult",
+                    icon: "📊",
+                    title: "The Permutation Puzzle",
+                    desc: "A vault code requires arranging the letters of the word 'MATHS'.",
+                    clue: "How many distinct arrangements can be made from the letters of 'MATHS'?",
+                    options: ["5! = 120", "5! / 2! = 60", "4! = 24", "5² = 25"],
+                    correct: 0,
+                    explanation: "All 5 letters in MATHS are distinct, so arrangements = 5! = 120."
+                },
+                {
+                    difficulty: "difficult",
+                    icon: "🔺",
+                    title: "The Triangle Angles",
+                    desc: "In a triangle, two angles are π/4 and π/3.",
+                    clue: "What is the third angle in radians?",
+                    options: ["5π/12", "7π/12", "π/6", "π/12"],
+                    correct: 0,
+                    explanation: "Sum of angles = π. Third = π - π/4 - π/3 = (12π - 3π - 4π)/12 = 5π/12."
+                },
+                {
+                    difficulty: "difficult",
+                    icon: "📐",
+                    title: "The Trig Identity Trap",
+                    desc: "A complex identity is scrawled on the vault: sin(A+B)·sin(A-B)",
+                    clue: "Which of these is equivalent to sin(A+B)·sin(A-B)?",
+                    options: ["sin²A - sin²B", "cos²A - cos²B", "sin²A + sin²B", "cos²B - cos²A"],
+                    correct: 0,
+                    explanation: "Using the product-to-sum formula: sin(A+B)sin(A-B) = sin²A - sin²B."
+                },
+                {
+                    difficulty: "difficult",
+                    icon: "∞",
+                    title: "The Limit Lock",
+                    desc: "The final vault lock shows a limit:",
+                    clue: `<span class="math">lim<sub style="font-size:0.75rem;">x→0</sub></span>&nbsp; (1 - cos 2x) / x² = ?`,
+                    options: ["1", "2", "4", "0"],
+                    correct: 1,
+                    explanation: "1 - cos 2x = 2sin²x → limit = 2·(sin²x/x²) → 2·1 = 2."
+                }
+            ];
+
+            // ---------- GAME STATE ----------
+            let currentIndex = 0;
+            let score = 0;
+            let answered = false;
+            let selectedOption = -1;
+            const totalClues = clues.length;
+
+            // DOM refs
+            const difficultyTag = document.getElementById('difficultyTag');
+            const evidenceIcon = document.getElementById('evidenceIcon');
+            const evidenceTitle = document.getElementById('evidenceTitle');
+            const evidenceDesc = document.getElementById('evidenceDesc');
+            const clueText = document.getElementById('clueText');
+            const optionsContainer = document.getElementById('optionsContainer');
+            const feedbackMsg = document.getElementById('feedbackMsg');
+            const nextBtn = document.getElementById('nextBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            const clueCounter = document.getElementById('clueCounter');
+            const winOverlay = document.getElementById('winOverlay');
+            const winSubtitle = document.getElementById('winSubtitle');
+            const winScore = document.getElementById('winScore');
+            const winCloseBtn = document.getElementById('winCloseBtn');
+            const confettiContainer = document.getElementById('confettiContainer');
+
+            // helper: difficulty class
+            function getDifficultyClass(diff) {
+                if (diff === 'easy') return 'easy-tag';
+                if (diff === 'moderate') return 'moderate-tag';
+                return 'difficult-tag';
+            }
+
+            // update score with animation
+            function updateScoreUI() {
+                scoreDisplay.textContent = score;
+                scoreDisplay.classList.add('score-pop');
+                setTimeout(() => scoreDisplay.classList.remove('score-pop'), 400);
+            }
+
+            // update clue counter
+            function updateCounter() {
+                clueCounter.textContent = `${currentIndex + 1}/${totalClues}`;
+            }
+
+            // render current clue
+            function renderClue() {
+                const c = clues[currentIndex];
+                answered = false;
+                selectedOption = -1;
+
+                difficultyTag.textContent = c.difficulty.toUpperCase();
+                difficultyTag.className = `evidence-tag ${getDifficultyClass(c.difficulty)}`;
+
+                evidenceIcon.textContent = c.icon || '📜';
+                evidenceTitle.textContent = c.title;
+                evidenceDesc.textContent = c.desc;
+                clueText.innerHTML = c.clue;
+
+                optionsContainer.innerHTML = '';
+                c.options.forEach((opt, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'lock-btn';
+                    btn.setAttribute('data-index', idx);
+                    btn.innerHTML = `<span class="lock-icon">🔒</span><span style="flex:1">${opt}</span>`;
+                    btn.addEventListener('click', () => onOptionClick(idx));
+                    optionsContainer.appendChild(btn);
+                });
+
+                feedbackMsg.innerHTML = '🔍 Examine the clue and choose the right key.';
+                feedbackMsg.className = 'feedback-message';
+
+                nextBtn.disabled = true;
+                nextBtn.textContent = 'Next Clue ➡️';
+
+                updateCounter();
+                restartBtn.disabled = false;
+            }
+
+            // option click handler
+            function onOptionClick(optIndex) {
+                if (answered) return;
+                const c = clues[currentIndex];
+                const isCorrect = (optIndex === c.correct);
+                const optionButtons = document.querySelectorAll('.lock-btn');
+
+                answered = true;
+                selectedOption = optIndex;
+
+                optionButtons.forEach(btn => { btn.disabled = true; });
+
+                optionButtons.forEach((btn, idx) => {
+                    if (idx === c.correct) {
+                        btn.classList.add('correct');
+                        btn.querySelector('.lock-icon').textContent = '🔓';
+                    } else if (idx === optIndex && !isCorrect) {
+                        btn.classList.add('wrong');
+                        btn.querySelector('.lock-icon').textContent = '❌';
+                    }
+                });
+
+                if (isCorrect) {
+                    score += 1;
+                    updateScoreUI();
+                    feedbackMsg.innerHTML = `✅ <strong>Correct!</strong> ${c.explanation}`;
+                    feedbackMsg.className = 'feedback-message success';
+                } else {
+                    const correctAns = c.options[c.correct];
+                    feedbackMsg.innerHTML = `❌ <strong>Incorrect.</strong> The correct key was "<strong>${correctAns}</strong>". ${c.explanation}`;
+                    feedbackMsg.className = 'feedback-message error';
+                    document.querySelector('.locks-panel').classList.add('shake');
+                    setTimeout(() => document.querySelector('.locks-panel').classList.remove('shake'), 400);
+                }
+
+                nextBtn.disabled = false;
+                if (currentIndex === totalClues - 1) {
+                    nextBtn.textContent = 'Finish Case 🏁';
+                } else {
+                    nextBtn.textContent = 'Next Clue ➡️';
+                }
+            }
+
+            // next clue handler
+            function goToNext() {
+                if (!answered) return;
+
+                if (currentIndex === totalClues - 1) {
+                    finishGame();
+                    return;
+                }
+
+                currentIndex++;
+                renderClue();
+                nextBtn.disabled = true;
+                updateCounter();
+            }
+
+            // ---------- WINNING ANIMATION ----------
+            function createConfetti() {
+                confettiContainer.innerHTML = '';
+                const colors = ['#ffd700', '#ff6b6b', '#4ecdc4', '#a29bfe', '#fd79a8', '#55efc4', '#fdcb6e', '#e17055', '#00cec9', '#6c5ce7'];
+                const shapes = ['■', '●', '▲', '★', '◆', '♥'];
+                
+                for (let i = 0; i < 120; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+                    const size = 8 + Math.random() * 14;
+                    
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.width = size + 'px';
+                    confetti.style.height = size + 'px';
+                    confetti.style.backgroundColor = Math.random() > 0.5 ? color : 'transparent';
+                    confetti.style.color = color;
+                    confetti.style.fontSize = size + 'px';
+                    confetti.style.display = 'flex';
+                    confetti.style.alignItems = 'center';
+                    confetti.style.justifyContent = 'center';
+                    
+                    if (Math.random() > 0.5) {
+                        confetti.textContent = shape;
+                    }
+                    
+                    const duration = 2.5 + Math.random() * 2.5;
+                    const delay = Math.random() * 1.2;
+                    
+                    confetti.style.animation = `confettiFall ${duration}s ${delay}s linear forwards`;
+                    confettiContainer.appendChild(confetti);
+                }
+            }
+
+            function createStarBurst() {
+                const centerX = window.innerWidth / 2;
+                const centerY = window.innerHeight / 2;
+                const stars = ['✨', '⭐', '🌟', '💫', '✨', '⭐'];
+                
+                for (let i = 0; i < 20; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star-burst';
+                    star.textContent = stars[Math.floor(Math.random() * stars.length)];
+                    star.style.left = centerX + 'px';
+                    star.style.top = centerY + 'px';
+                    star.style.fontSize = (16 + Math.random() * 24) + 'px';
+                    
+                    const angle = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.5;
+                    const distance = 150 + Math.random() * 250;
+                    star.style.setProperty('--tx', Math.cos(angle) * distance + 'px');
+                    star.style.setProperty('--ty', Math.sin(angle) * distance + 'px');
+                    
+                    document.body.appendChild(star);
+                    setTimeout(() => star.remove(), 1600);
+                }
+            }
+
+            function launchWinningAnimation() {
+                const percentage = Math.round((score / totalClues) * 100);
+                let subtitle = '';
+                if (percentage === 100) subtitle = '🏆 PERFECT! You cracked every clue!';
+                else if (percentage >= 80) subtitle = '🌟 Excellent detective work!';
+                else if (percentage >= 60) subtitle = '📘 Good effort, detective!';
+                else subtitle = '📚 Keep training, you\'ll crack it next time!';
+
+                winSubtitle.textContent = subtitle;
+                winScore.textContent = `Score: ${score}/${totalClues} (${percentage}%)`;
+                
+                createConfetti();
+                createStarBurst();
+                
+                setTimeout(() => {
+                    winOverlay.classList.add('show');
+                }, 300);
+
+                // Add extra star bursts
+                setTimeout(() => createStarBurst(), 600);
+                setTimeout(() => createStarBurst(), 1000);
+            }
+
+            // finish game
+            function finishGame() {
+                nextBtn.disabled = true;
+                const optionButtons = document.querySelectorAll('.lock-btn');
+                optionButtons.forEach(btn => { btn.disabled = true; });
+
+                feedbackMsg.innerHTML = `🏁 <strong>Case closed!</strong> Check your results!`;
+                feedbackMsg.className = 'feedback-message success';
+
+                clueCounter.textContent = `${totalClues}/${totalClues}`;
+                nextBtn.textContent = 'Done 🎉';
+
+                launchWinningAnimation();
+            }
+
+            // restart
+            function restartGame() {
+                currentIndex = 0;
+                score = 0;
+                answered = false;
+                selectedOption = -1;
+
+                scoreDisplay.textContent = '0';
+                clueCounter.textContent = `1/${totalClues}`;
+                nextBtn.textContent = 'Next Clue ➡️';
+                nextBtn.disabled = true;
+
+                winOverlay.classList.remove('show');
+                confettiContainer.innerHTML = '';
+
+                renderClue();
+            }
+
+            // event listeners
+            nextBtn.addEventListener('click', goToNext);
+            restartBtn.addEventListener('click', restartGame);
+            winCloseBtn.addEventListener('click', restartGame);
+
+            // init
+            function init() {
+                currentIndex = 0;
+                score = 0;
+                renderClue();
+                updateCounter();
+                scoreDisplay.textContent = '0';
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
